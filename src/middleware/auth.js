@@ -7,7 +7,7 @@ const ObjectId = mongoose.Types.ObjectId
 
 //-------------------------AUTHENTICATION----------------------------------------------//
 
-const authenticate = function(req, res, next) {
+const authentication = function(req, res, next) {
     try {
         let token = req.headers["x-api-key"];
         if (!token) return res.status(400).send({ status: false, msg: "token must be present" });
@@ -74,5 +74,4 @@ const authorisation = async function(req, res, next) {
         return res.status(500).send({ status: false, msg: err.message })
     }
 }
-module.exports.authenticate = authenticate
-module.exports.authorisation = authorisation
+module.exports = { authentication, authorisation }

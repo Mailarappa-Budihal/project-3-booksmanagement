@@ -1,16 +1,29 @@
-const express=require('express')
-const router=express.Router();
-const userController=require('../controller/userController')
-const bookController=require('../controller/bookController')
-const mid=require('../middleware/auth')
+const express = require('express')
+const router = express.Router();
+const userController = require('../controller/userController')
+const bookController = require('../controller/bookController')
+const middleWare = require('../middleware/auth')
 
-router.post('/register',userController.createUser)
-router.post('/login',userController.loginUser)
+//-------------------register-----------------------------//
+router.post('/register', userController.createUser)
 
-router.post('/books',mid.authenticate,mid.authorisation,bookController.createBook)
-router.get('/books',mid.authenticate,bookController.getBooks)
-router.get('/books/:bookId',mid.authenticate,bookController.getBookById)
-router.put('/books/:bookId',mid.authenticate,mid.authorisation,bookController.updateBook)
-router.delete('/books/:bookId',mid.authenticate,mid.authorisation,bookController.deleteBook)
+//--------------------Loginuser---------------------------//
+router.post('/login', userController.loginUser)
 
-module.exports=router
+//--------------------createbook--------------------------//
+
+router.post('/books', middleWare.authentication, middleWare.authorisation, bookController.createBook)
+
+//--------------------getebookbyquery---------------------//
+router.get('/books', middleWare.authentication, bookController.getBooks)
+
+//--------------------getebookbyId------------------------//
+router.get('/books/:bookId', middleWare.authentication, bookController.getBookById)
+
+//--------------------updatebook--------------------------//
+router.put('/books/:bookId', middleWare.authentication, middleWare.authorisation, bookController.updateBook)
+
+//--------------------deletetebook-------------------------//
+router.delete('/books/:bookId', middleWare.authentication, middleWare.authorisation, bookController.deleteBook)
+
+module.exports = router
