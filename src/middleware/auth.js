@@ -5,15 +5,15 @@ const mongoose = require("mongoose")
 const validator = require('../validators/validator')
 const ObjectId = mongoose.Types.ObjectId
 
+//-------------------------AUTHENTICATION----------------------------------------------//
 
-
-const authenticate = function (req, res, next) {
+const authenticate = function(req, res, next) {
     try {
         let token = req.headers["x-api-key"];
         if (!token) return res.status(400).send({ status: false, msg: "token must be present" });
 
 
-        jwt.verify(token, "Group-69-Project-3", function (err, decodedToken) {
+        jwt.verify(token, "Group-69-Project-3", function(err, decodedToken) {
             if (err) { return res.status(400).send({ status: false, msg: "token is invalid!!" }) }
             req.decodedToken = decodedToken
 
@@ -24,14 +24,13 @@ const authenticate = function (req, res, next) {
         });
 
 
-    }
-    catch (err) {
+    } catch (err) {
         return res.status(500).send({ status: false, msg: err.message });
     }
 }
 
-
-const authorisation = async function (req, res, next) {
+//-----------------------------AUTHORISATION-------------------------------------------//
+const authorisation = async function(req, res, next) {
     try {
         //check authorization when data is coming from request body
         let userLoggedIn = req.decodedToken.userId
@@ -39,7 +38,7 @@ const authorisation = async function (req, res, next) {
         if (req.body.userId) {
             let userId = req.body.userId
 
-            if (!validator.isValid(userId)) return res.status(400).send({ status: false, msg: "User Id is required and should be a valid string" })
+            if (!validator.isValid(userId)) return res.status(400).send({ status: false, msg: "User Id is Mandatory" })
 
             if (!ObjectId.isValid(userId.trim())) return res.status(400).send({ status: false, msg: "userId is not valid,should be of 24 digits" })
 
@@ -71,8 +70,7 @@ const authorisation = async function (req, res, next) {
 
         }
 
-    }
-    catch (err) {
+    } catch (err) {
         return res.status(500).send({ status: false, msg: err.message })
     }
 }
