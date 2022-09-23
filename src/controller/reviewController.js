@@ -42,12 +42,6 @@ const createReview = async function(req, res) {
 
     return res.status(200).send({ status: false, msg: "Reviews added successfully for the given book", data: final })
 
-
-
-
-
-
-
 }
 
 module.exports.createReview = createReview;
