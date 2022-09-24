@@ -30,7 +30,10 @@ router.delete('/books/:bookId', middleWare.authentication, middleWare.authorisat
 
 router.post('/books/:bookId/review', reviewController.createReview)
 
-//--------------------createReview-------------------------//
-router.post('/books/:bookId/review/:reviewId', reviewController.createReview)
+//--------------------updateteReview-------------------------//
+router.put('/books/:bookId/review/:reviewId', reviewController.updateReview)
+
+//--------------------deleteReview----------------------------//
+router.delete('/books/:bookId/review/:reviewId', reviewController.deleteReview)
 
 module.exports = router
