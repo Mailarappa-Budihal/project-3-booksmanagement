@@ -22,7 +22,7 @@ const createBook = async function(req, res) {
                     msg: "Request body cannot be empty,please provide book  details to create book",
                 });
 
-        //---------------------------validation for userId-------------------------------------//
+        //------------------------validation for userId--------------------------------//
 
         if (!validator.isValid(userId))
             return res
@@ -82,7 +82,7 @@ const createBook = async function(req, res) {
                     status: false,
                     msg: "ISBN should of 13 digits and only hyphens allowed with digits",
                 });
-        //---------------------------Validation for category-------------------------------------//
+        //-------------------------Validation for category----------------------------------//
 
         if (!validator.isValid(category))
             return res
@@ -92,7 +92,7 @@ const createBook = async function(req, res) {
                     msg: "Category is Mandatory",
                 });
 
-        //---------------------------Validation for subcategory-------------------------------------//
+        //-----------------------Validation for subcategory-------------------------------//
         if (!validator.isValid(subcategory))
             return res
                 .status(400)
@@ -101,7 +101,7 @@ const createBook = async function(req, res) {
                     msg: "Sub-Category  is Mandatory",
                 });
 
-        //---------------------------Validation for releasedAt------------------------------------//
+        //-------------------------Validation for releasedAt---------------------------------//
         if (!validator.isValid(releasedAt))
             return res
                 .status(400)
@@ -119,7 +119,7 @@ const createBook = async function(req, res) {
                     msg: "format of date is wrong,correct fromat is YYYY-MM-DD",
                 });
 
-        //---------------------------Validation for Duplication------------------------------------//
+        //-------------------------Validation for Duplication----------------------------//
         let dupTitle = await bookModel.findOne({ title: title });
         if (dupTitle)
             return res
@@ -329,7 +329,7 @@ const updateBook = async function(req, res) {
                     });
         } //validation ends here
 
-        //--------checking for uniqueness-----------------------------------//
+        //--------------checking for uniqueness--------------------------------//
         let dupTitle = await bookModel.findOne({ title: title });
         if (dupTitle)
             return res
@@ -342,7 +342,7 @@ const updateBook = async function(req, res) {
                 .status(400)
                 .send({ status: false, msg: `ISBN ${ISBN} is already in use` });
 
-        //------------------------------------updating the Book------------------------------------//
+        //-----------------------------updating the Book------------------------------//
 
         let updatedBook = await bookModel.findOneAndUpdate({ _id: bId }, { title: title, excerpt: excerpt, ISBN: ISBN, releasedAt: releasedAt }, { new: true });
         return res
