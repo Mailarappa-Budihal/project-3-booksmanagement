@@ -13,6 +13,7 @@ const createBook = async function(req, res) {
         let { title, excerpt, userId, ISBN, category, subcategory, releasedAt } =
         data;
 
+        //-----------------------validationReqBody------------------------------------//
         if (Object.keys(data).length == 0)
             return res
                 .status(400)
@@ -21,7 +22,7 @@ const createBook = async function(req, res) {
                     msg: "Request body cannot be empty,please provide book  details to create book",
                 });
 
-        //check for validation and existence of user by userId from request body
+        //---------------------------validation for userId-------------------------------------//
 
         if (!validator.isValid(userId))
             return res
@@ -45,7 +46,7 @@ const createBook = async function(req, res) {
                 .status(404)
                 .send({ status: false, msg: `No user found with this ${userId}` });
 
-        //validation for other data in request body
+        //---------------------------Validation for title-------------------------------------//
 
         if (!validator.isValid(title))
             return res
@@ -55,6 +56,7 @@ const createBook = async function(req, res) {
                     msg: "Title is Mandatory",
                 });
 
+        //---------------------------Validation for title-------------------------------------//
         if (!validator.isValid(excerpt))
             return res
                 .status(400)
@@ -63,6 +65,7 @@ const createBook = async function(req, res) {
                     msg: "Excerpt is Mandatory",
                 });
 
+        //---------------------------Validation for ISBN-------------------------------------//
         if (!validator.isValid(ISBN))
             return res
                 .status(400)
@@ -79,6 +82,7 @@ const createBook = async function(req, res) {
                     status: false,
                     msg: "ISBN should of 13 digits and only hyphens allowed with digits",
                 });
+        //---------------------------Validation for category-------------------------------------//
 
         if (!validator.isValid(category))
             return res
@@ -88,6 +92,7 @@ const createBook = async function(req, res) {
                     msg: "Category is Mandatory",
                 });
 
+        //---------------------------Validation for subcategory-------------------------------------//
         if (!validator.isValid(subcategory))
             return res
                 .status(400)
@@ -96,6 +101,7 @@ const createBook = async function(req, res) {
                     msg: "Sub-Category  is Mandatory",
                 });
 
+        //---------------------------Validation for releasedAt------------------------------------//
         if (!validator.isValid(releasedAt))
             return res
                 .status(400)
@@ -113,6 +119,7 @@ const createBook = async function(req, res) {
                     msg: "format of date is wrong,correct fromat is YYYY-MM-DD",
                 });
 
+        //---------------------------Validation for Duplication------------------------------------//
         let dupTitle = await bookModel.findOne({ title: title });
         if (dupTitle)
             return res
@@ -125,6 +132,7 @@ const createBook = async function(req, res) {
                 .status(400)
                 .send({ status: false, msg: `ISBN ${ISBN} is already in use` });
 
+        //---------------------------Bookcreation------------------------------------//
         const bookCreated = await bookModel.create(data);
         return res
             .status(201)
@@ -133,6 +141,7 @@ const createBook = async function(req, res) {
         return res.status(500).send({ status: false, msg: err.message });
     }
 }; //function ends here
+
 
 //-----------------------------------getBooksByQuery--------------------------------------//
 
@@ -211,6 +220,7 @@ const getBookById = async function(req, res) {
     try {
         let bId = req.params.bookId;
 
+        //-----------------------validation for BookId------------------------------------//
         if (!ObjectId.isValid(bId))
             return res
                 .status(400)
@@ -240,7 +250,7 @@ const updateBook = async function(req, res) {
         let bId = req.params.bookId;
         let data = req.body;
         let { title, excerpt, releasedAt, ISBN } = data;
-
+        //-----------------------validation for BookId-----------------------------------//
         if (!ObjectId.isValid(bId))
             return res
                 .status(400)
@@ -258,6 +268,7 @@ const updateBook = async function(req, res) {
                     msg: "No book present with this book Id or is already deleted!",
                 });
 
+        //-----------------------validation for ReqBody------------------------------------//
         if (Object.keys(data).length == 0)
             return res
                 .status(400)
@@ -266,6 +277,7 @@ const updateBook = async function(req, res) {
                     msg: "Request body cann't be empty while updating",
                 });
 
+        //-----------------------validation for ReqBody------------------------------------//
         if (title || excerpt || ISBN || releasedAt) {
             if (!validator.isValid(title))
                 return res
@@ -330,6 +342,8 @@ const updateBook = async function(req, res) {
                 .status(400)
                 .send({ status: false, msg: `ISBN ${ISBN} is already in use` });
 
+        //------------------------------------updating the Book------------------------------------//
+
         let updatedBook = await bookModel.findOneAndUpdate({ _id: bId }, { title: title, excerpt: excerpt, ISBN: ISBN, releasedAt: releasedAt }, { new: true });
         return res
             .status(200)
@@ -344,6 +358,7 @@ const deleteBook = async function(req, res) {
     try {
         let bId = req.params.bookId;
 
+        //-----------------------validation for bookId------------------------------------//
         if (!ObjectId.isValid(bId))
             return res
                 .status(400)
@@ -361,6 +376,7 @@ const deleteBook = async function(req, res) {
                     msg: "No book present with this book Id or is already deleted + 1",
                 });
 
+        //----------------------- deleting the book------------------------------------//
         await bookModel.findOneAndUpdate({ _id: bId }, { isDeleted: true, deletedAt: new Date() }, { new: true });
         return res
             .status(200)
@@ -370,8 +386,4 @@ const deleteBook = async function(req, res) {
     }
 };
 
-module.exports.createBook = createBook;
-module.exports.getBooks = getBooks;
-module.exports.getBookById = getBookById;
-module.exports.updateBook = updateBook;
-module.exports.deleteBook = deleteBook;
+module.exports = { createBook, getBookById, getBooks, updateBook, deleteBook };
