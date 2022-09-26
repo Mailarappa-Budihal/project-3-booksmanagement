@@ -28,7 +28,7 @@ const createReview = async function(req, res) {
         }
 
         //----------------validatingrating------------------------//
-        if (!validator.isValid(rating)) return res.status(400).send({ status: false, msg: "Rating is mandatory and should be a valid integer value" })
+        if (!validator.isValidRating(rating)) return res.status(400).send({ status: false, msg: "Rating is mandatory and should be a valid integer value" })
 
         const rat = /^[1-5]$/.test(rating)
         if (rat == false) return res.status(400).send({ status: false, msg: "Rating should be in between 1 to 5" })
@@ -96,7 +96,7 @@ const updateReview = async function(req, res) {
         //----------------validatingrating------------------------//
 
         if (rating) {
-            if (!validator.isValid(rating)) return res.status(400).send({ status: false, msg: "Rating is mandatory and should be a valid integer value" })
+            if (!validator.isValidRating(rating)) return res.status(400).send({ status: false, msg: "Rating is mandatory and should be a valid integer value" })
 
             const rat = /^[1-5]$/.test(rating)
             if (rat == false) return res.status(400).send({ status: false, msg: "Rating should be in between 1 to 5" })

@@ -5,8 +5,8 @@ const mongoose = require("mongoose")
 const validator = require('../validators/validator')
 const ObjectId = mongoose.Types.ObjectId
 
-//-------------------------AUTHENTICATION----------------------------------------------//
 
+//----------------------------AUTHENTICATION--------------------------------------//
 const authentication = function(req, res, next) {
     try {
         let token = req.headers["x-api-key"];
@@ -14,12 +14,15 @@ const authentication = function(req, res, next) {
 
 
         jwt.verify(token, "Group-69-Project-3", function(err, decodedToken) {
-            if (err) { return res.status(400).send({ status: false, msg: "token is invalid!!" }) }
-            req.decodedToken = decodedToken
+            if (err) {
+                let message =
+                    err.message === "jwt expired" ? "Token is expired" : "Token is invalid";
+                return res.status(401).send({ status: false, msg: message })
+            }
 
-            if (Date.now() > (decodedToken.exp) * 1000) return res.status(400).send({ status: false, msg: "Token expired" })
+            req.decodedToken = decodedToken //setting an attribute in req so that we can access it everywhere
 
-            console.log(decodedToken)
+            //console.log(decodedToken)
             next()
         });
 
@@ -67,8 +70,8 @@ const authorisation = async function(req, res, next) {
             if (checkBook.isDeleted == true) return res.status(400).send({ status: false, msg: "Book with the given id is already deleted!!" })
 
             next()
-
         }
+        next()
 
     } catch (err) {
         return res.status(500).send({ status: false, msg: err.message })
