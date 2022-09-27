@@ -13,7 +13,7 @@ router.post('/login', userController.loginUser)
 
 //--------------------createbook--------------------------//
 
-router.post('/books', middleWare.authentication, middleWare.authorisation, bookController.createBook)
+router.post('/books', middleWare.authentication, bookController.createBook)
 
 //--------------------getebookbyquery---------------------//
 router.get('/books', middleWare.authentication, bookController.getBooks)

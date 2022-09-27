@@ -15,109 +15,90 @@ const createBook = async function(req, res) {
 
         //-----------------------validationReqBody------------------------------------//
         if (Object.keys(data).length == 0)
-            return res
-                .status(400)
-                .send({
-                    status: false,
-                    msg: "Request body cannot be empty,please provide book  details to create book",
-                });
-
-        //------------------------validation for userId--------------------------------//
-
-        if (!validator.isValid(userId))
-            return res
-                .status(400)
-                .send({
-                    status: false,
-                    msg: "User Id is Mandatory",
-                });
-
-        if (!ObjectId.isValid(userId))
-            return res
-                .status(400)
-                .send({
-                    status: false,
-                    msg: "Invalid user id it should be of 24 digits!!",
-                });
-
-        let userCheck = await userModel.findById(userId);
-        if (!userCheck)
-            return res
-                .status(404)
-                .send({ status: false, msg: `No user found with this ${userId}` });
+            return res.status(400).send({
+                status: false,
+                msg: "Request body cannot be empty,please provide book  details to create book",
+            });
 
         //---------------------------Validation for title-------------------------------------//
 
         if (!validator.isValid(title))
+            return res.status(400).send({
+                status: false,
+                msg: "Title is Mandatory",
+            });
+
+        //---------------------------Validation for excerpt-----------------------------------//
+        if (!validator.isValid(excerpt))
+            return res.status(400).send({
+                status: false,
+                msg: "Excerpt is Mandatory",
+            });
+
+        //------------------------validation for userId--------------------------------//
+        if (!validator.isValid(userId))
+            return res
+                .status(400)
+                .send({ status: false, msg: "User Id is Mandatory" });
+
+        if (!ObjectId.isValid(userId.trim()))
             return res
                 .status(400)
                 .send({
                     status: false,
-                    msg: "Title is Mandatory",
+                    msg: "userId is not valid,should be of 24 digits",
                 });
 
-        //---------------------------Validation for title-------------------------------------//
-        if (!validator.isValid(excerpt))
+        const userToCreateBook = await userModel.findById(userId);
+        if (!userToCreateBook)
             return res
-                .status(400)
+                .status(404)
                 .send({
                     status: false,
-                    msg: "Excerpt is Mandatory",
+                    msg: `No such user present with ${userId}`,
                 });
 
         //---------------------------Validation for ISBN-------------------------------------//
         if (!validator.isValid(ISBN))
-            return res
-                .status(400)
-                .send({
-                    status: false,
-                    msg: "ISBN is Mandatory",
-                });
+            return res.status(400).send({
+                status: false,
+                msg: "ISBN is Mandatory",
+            });
 
         const isb = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/.test(ISBN); //check for format of ISBN
         if (isb == false)
-            return res
-                .status(400)
-                .send({
-                    status: false,
-                    msg: "ISBN should of 13 digits and only hyphens allowed with digits",
-                });
+            return res.status(400).send({
+                status: false,
+                msg: "ISBN should of 13 digits and only hyphens allowed with digits",
+            });
         //-------------------------Validation for category----------------------------------//
 
         if (!validator.isValid(category))
-            return res
-                .status(400)
-                .send({
-                    status: false,
-                    msg: "Category is Mandatory",
-                });
+            return res.status(400).send({
+                status: false,
+                msg: "Category is Mandatory",
+            });
 
         //-----------------------Validation for subcategory-------------------------------//
         if (!validator.isValid(subcategory))
-            return res
-                .status(400)
-                .send({
-                    status: false,
-                    msg: "Sub-Category  is Mandatory",
-                });
+            return res.status(400).send({
+                status: false,
+                msg: "Sub-Category  is Mandatory",
+            });
 
         //-------------------------Validation for releasedAt---------------------------------//
         if (!validator.isValid(releasedAt))
-            return res
-                .status(400)
-                .send({
-                    status: false,
-                    msg: "ReleasedAt is Mandatory",
-                });
+            return res.status(400).send({
+                status: false,
+                msg: "ReleasedAt is Mandatory",
+            });
 
         var date = moment(releasedAt, "YYYY-MM-DD", true).isValid();
         if (!date)
-            return res
-                .status(400)
-                .send({
-                    status: false,
-                    msg: "format of date is wrong,correct fromat is YYYY-MM-DD",
-                });
+            return res.status(400).send({
+                status: false,
+                msg: "format of date is wrong,correct fromat is YYYY-MM-DD",
+            });
 
         //-------------------------Validation for Duplication----------------------------//
         let dupTitle = await bookModel.findOne({ title: title });
@@ -136,12 +117,11 @@ const createBook = async function(req, res) {
         const bookCreated = await bookModel.create(data);
         return res
             .status(201)
-            .send({ status: false, msg: "Success", data: bookCreated });
+            .send({ status: true, message: "Success", data: bookCreated });
     } catch (err) {
         return res.status(500).send({ status: false, msg: err.message });
     }
 }; //function ends here
-
 
 //-----------------------------------getBooksByQuery--------------------------------------//
 
@@ -154,12 +134,10 @@ const getBooks = async function(req, res) {
         if (Object.keys(data).length > 0) {
             if (userId && userId.trim() !== "") {
                 if (!ObjectId.isValid(userId))
-                    return res
-                        .status(400)
-                        .send({
-                            status: false,
-                            msg: "UserId is not valid it should be of 24 digits",
-                        });
+                    return res.status(400).send({
+                        status: false,
+                        msg: "UserId is not valid it should be of 24 digits",
+                    });
                 filterQuery.userId = userId.trim();
             }
             if (category && category.trim() !== "") {
@@ -188,7 +166,7 @@ const getBooks = async function(req, res) {
 
             return res
                 .status(200)
-                .send({ status: true, msg: "Books list", data: result });
+                .send({ status: true, message: "Books list", data: result });
         } else {
             let result = await bookModel
                 .find({ isDeleted: false })
@@ -207,7 +185,7 @@ const getBooks = async function(req, res) {
 
             return res
                 .status(200)
-                .send({ status: true, msg: "Books list", data: result });
+                .send({ status: true, message: "Books list", data: result });
         }
     } catch (err) {
         return res.status(500).send({ status: false, msg: err.message });
@@ -222,12 +200,10 @@ const getBookById = async function(req, res) {
 
         //-----------------------validation for BookId------------------------------------//
         if (!ObjectId.isValid(bId))
-            return res
-                .status(400)
-                .send({
-                    status: false,
-                    msg: "Please enter valid Book Id,it should be of 24 digits",
-                });
+            return res.status(400).send({
+                status: false,
+                msg: "Please enter valid Book Id,it should be of 24 digits",
+            });
 
         const result = await bookModel.findOne({ _id: bId, isDeleted: false });
 
@@ -239,7 +215,7 @@ const getBookById = async function(req, res) {
         let obj = result.toObject();
         obj["reviewsData"] = review;
 
-        return res.status(200).send({ status: true, msg: "Books list", data: obj });
+        return res.status(200).send({ status: true, message: "Books list", data: obj });
     } catch (err) {
         return res.status(500).send({ status: false, msg: err.message });
     }
@@ -252,82 +228,44 @@ const updateBook = async function(req, res) {
         let { title, excerpt, releasedAt, ISBN } = data;
         //-----------------------validation for BookId-----------------------------------//
         if (!ObjectId.isValid(bId))
-            return res
-                .status(400)
-                .send({
-                    status: false,
-                    msg: "Please enter valid Book Id,it should be of 24 digits!!",
-                });
+            return res.status(400).send({
+                status: false,
+                msg: "Please enter valid Book Id,it should be of 24 digits!!",
+            });
 
         let checkBook = await bookModel.findOne({ _id: bId, isDeleted: false });
         if (!checkBook)
-            return res
-                .status(404)
-                .send({
-                    status: false,
-                    msg: "No book present with this book Id or is already deleted!",
-                });
+            return res.status(404).send({
+                status: false,
+                msg: "No book present with this book Id or is already deleted!",
+            });
 
         //-----------------------validation for ReqBody------------------------------------//
         if (Object.keys(data).length == 0)
-            return res
-                .status(400)
-                .send({
-                    status: false,
-                    msg: "Request body cann't be empty while updating",
-                });
+            return res.status(400).send({
+                status: false,
+                msg: "Request body cann't be empty while updating",
+            });
 
         //-----------------------validation for ReqBody------------------------------------//
-        if (title || excerpt || ISBN || releasedAt) {
-            if (!validator.isValid(title))
-                return res
-                    .status(400)
-                    .send({
-                        status: false,
-                        msg: "Title is Mandatory",
-                    });
 
-            if (!validator.isValid(excerpt))
-                return res
-                    .status(400)
-                    .send({
-                        status: false,
-                        msg: "Excerpt is Mandatory",
-                    });
+        if (title) { if (!validator.isValid(title)) return res.status(400).send({ status: false, msg: "Title is required and should be a valid string" }) }
 
-            if (!validator.isValid(ISBN))
-                return res
-                    .status(400)
-                    .send({
-                        status: false,
-                        msg: "ISBN is Mandatory",
-                    });
+        if (excerpt) { if (!validator.isValid(excerpt)) return res.status(400).send({ status: false, msg: "Excerpt is required and should be a valid string" }) }
 
-            const isb = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/.test(ISBN); //check for format of ISBN
-            if (isb == false)
-                return res
-                    .status(400)
-                    .send({
-                        status: false,
-                        msg: "ISBN should of 13 digits and only hyphens allowed with digits",
-                    });
+        if (ISBN) {
+            if (!validator.isValid(ISBN)) return res.status(400).send({ status: false, msg: "ISBN is required and should be a valid string" })
 
-            if (!validator.isValid(releasedAt))
-                return res
-                    .status(400)
-                    .send({
-                        status: false,
-                        msg: "ReleasedAt is Mandatory",
-                    });
-            var date = moment(releasedAt, "YYYY-MM-DD", true).isValid();
-            if (!date)
-                return res
-                    .status(400)
-                    .send({
-                        status: false,
-                        msg: "format of date is wrong,correct fromat is YYYY-MM-DD",
-                    });
-        } //validation ends here
+            const isb = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/.test(ISBN) //check for format of ISBN
+            if (isb == false) return res.status(400).send({ status: false, msg: "ISBN should of 13 digits and only hyphens allowed with digits" })
+        }
+
+        if (releasedAt) {
+            if (!validator.isValid(releasedAt)) return res.status(400).send({ status: false, msg: "ReleasedAt is required and should be a valid string" })
+
+            var date = moment(releasedAt, 'YYYY-MM-DD', true).isValid()
+            if (!date) return res.status(400).send({ status: false, msg: "format of date is wrong,correct fromat is YYYY-MM-DD" })
+        }
 
         //--------------checking for uniqueness--------------------------------//
         let dupTitle = await bookModel.findOne({ title: title });
@@ -347,7 +285,7 @@ const updateBook = async function(req, res) {
         let updatedBook = await bookModel.findOneAndUpdate({ _id: bId }, { title: title, excerpt: excerpt, ISBN: ISBN, releasedAt: releasedAt }, { new: true });
         return res
             .status(200)
-            .send({ status: true, msg: "success", data: updatedBook });
+            .send({ status: true, message: "success", data: updatedBook });
     } catch (err) {
         return res.status(500).send({ status: false, msg: err.message });
     }
@@ -360,27 +298,23 @@ const deleteBook = async function(req, res) {
 
         //-----------------------validation for bookId------------------------------------//
         if (!ObjectId.isValid(bId))
-            return res
-                .status(400)
-                .send({
-                    status: false,
-                    msg: "Please enter valid Book Id,it should be of 24 digits!",
-                });
+            return res.status(400).send({
+                status: false,
+                msg: "Please enter valid Book Id,it should be of 24 digits!",
+            });
 
         let checkBook = await bookModel.findOne({ _id: bId, isDeleted: false });
         if (!checkBook)
-            return res
-                .status(404)
-                .send({
-                    status: false,
-                    msg: "No book present with this book Id or is already deleted + 1",
-                });
+            return res.status(404).send({
+                status: false,
+                msg: "No book present with this book Id or is already deleted + 1",
+            });
 
         //----------------------- deleting the book------------------------------------//
         await bookModel.findOneAndUpdate({ _id: bId }, { isDeleted: true, deletedAt: new Date() }, { new: true });
         return res
             .status(200)
-            .send({ status: false, msg: "Book deleted successfully!!" });
+            .send({ status: true, message: "Book deleted successfully!!" });
     } catch (err) {
         return res.status(500).send({ status: false, msg: err.message });
     }

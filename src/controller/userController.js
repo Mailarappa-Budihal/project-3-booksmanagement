@@ -53,7 +53,7 @@ const createUser = async function(req, res) {
 
             //-----------------------create user------------------------------------//
             let createdUser = await userModel.create(data)
-            return res.status(201).send({ status: true, msg: "Success", data: createdUser })
+            return res.status(201).send({ status: true, message: "Success", data: createdUser })
                 //console.log(createdUser)
         } catch (err) {
             return res.status(500).send({ status: false, msg: err.message })
@@ -85,7 +85,7 @@ const loginUser = async function(req, res) {
         }
 
         const token = jwt.sign(payload, 'Group-69-Project-3')
-        return res.status(200).send({ status: true, msg: "User logged in succesfully", data: token, iat: payload.iat, exp: payload.exp })
+        return res.status(200).send({ status: true, message: "User logged in succesfully", data: token, iat: payload.iat, exp: payload.exp })
     } catch (err) {
         return res.status(500).send({ status: false, msg: err.message })
     }

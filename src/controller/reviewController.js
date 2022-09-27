@@ -50,9 +50,9 @@ const createReview = async function(req, res) {
 
         //-------------------addingReviewtoBook------------------//
         const final = checkBook.toObject();
-        final['reviewsData'] = response;
+        final.reviewsData = response;
 
-        return res.status(201).send({ status: false, msg: "Reviews added successfully for the given book", data: final })
+        return res.status(201).send({ status: true, message: "Reviews added successfully for the given book", data: final })
 
     } catch (err) {
         return res.status(500).send({ status: false, msg: err.message });
@@ -116,7 +116,7 @@ const updateReview = async function(req, res) {
         let final = checkBook.toObject()
         final['reviewsData'] = updatedReview;
 
-        return res.status(200).send({ status: true, msg: "Review updated successfully!", data: final })
+        return res.status(200).send({ status: true, message: "Review updated successfully!", data: final })
 
 
     } catch (err) {
@@ -153,7 +153,7 @@ const deleteReview = async function(req, res) {
         if (deletedReview) {
             await bookModel.findByIdAndUpdate({ _id: bId }, { $inc: { reviews: -1 } }, { new: true })
         }
-        return res.status(200).send({ status: false, msg: "Reviews deleted Successfully!!", data: deletedReview })
+        return res.status(200).send({ status: false, message: "Reviews deleted Successfully!!", data: deletedReview })
     } catch (err) {
         return res.status(500).send({ status: false, msg: err.message });
     }
